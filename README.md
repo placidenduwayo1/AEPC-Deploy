@@ -8,7 +8,7 @@ this git is containing a **docker-compose.yml** file for deploying in docker ima
 	 * a container of registration of microservices: ***ms-registration-api***
 	 * a gateway container between backend and the frontend: ***back-front-gateway-api*** 
  
-*containers related to business microservices (each business microservice is implemented in clean architecture pattern):
+* containers related to business microservices (each business microservice is implemented in clean architecture pattern):
 
 	* a container microservice of managing addresses: ***bs-ms-address-api***
 	* a container microservice of managing employees: ***bs-ms-employee-api***
