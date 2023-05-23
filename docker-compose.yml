@@ -1,0 +1,140 @@
+version: '3.4'
+
+services:
+
+  ms-apis-db:
+    image: mysql:8.0
+    container_name: ms-apis-db
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - apis-network
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      #for not be lost after containers restart all data are mapped on volume:/ms-apis-db folder
+    volumes:
+      - ../AEPC-apis-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    
+  ms-config-api:
+    image: ms-config-api:latest
+    container_name: ms-config-api
+    ports:
+      - "8280:8280"
+    networks:
+      - apis-network
+    build: 
+      context: ../AEPC-Back/ms-config-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-I", "http://ms-config-api:8280"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  ms-registration-api:
+    image: ms-registration-api:latest
+    container_name: ms-registration-api
+    build: 
+      context: ../AEPC-Back/ms-registration-service
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - apis-network
+    depends_on:
+      ms-config-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-I", "http://ms-registration-api:8761"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 40s
+
+  back-front-gateway-api:
+    image: back-front-gateway-api:latest
+    container_name: back-front-gateway-api
+    ports:
+      - "8281:8281"
+    build: 
+      context: ../AEPC-Back/back-front-gateway-service
+      dockerfile: Dockerfile
+    depends_on:
+      ms-registration-api:
+        condition: service_healthy
+    networks:
+      - apis-network
+
+  bs-ms-address-api:
+    image: bs-ms-address-api:latest
+    container_name: bs-ms-address-api
+    build:
+      context: ../AEPC-Back/clean-archi-ms-address
+      dockerfile: Dockerfile
+    ports:
+      - "8282:8282"
+    depends_on:
+      ms-apis-db:
+        condition: service_healthy
+      ms-registration-api:
+        condition: service_healthy
+    networks:
+      - apis-network
+    
+  bs-ms-company-api:
+    image: bs-ms-company-api:latest
+    container_name: bs-ms-company-api
+    build: 
+      context: ../AEPC-Back/clean-archi-ms-company
+      dockerfile: Dockerfile
+    ports:
+      - "8284:8284"
+    depends_on:
+      ms-apis-db:
+        condition: service_healthy
+      ms-registration-api:
+        condition: service_healthy
+    networks:
+      - apis-network
+  
+  bs-ms-employee-api:
+    image: bs-ms-employee-api:latest
+    container_name: bs-ms-employee-api
+    build: 
+      context: ../AEPC-Back/clean-archi-ms-employee
+      dockerfile: Dockerfile
+    ports:
+      - "8283:8283"
+    depends_on:
+      ms-apis-db:
+        condition: service_healthy
+      ms-registration-api:
+        condition: service_healthy
+    networks:
+      - apis-network
+  
+  bs-ms-project-api:
+    image: bs-ms-project-api:latest
+    container_name: bs-ms-project-api
+    build: 
+      context: ../AEPC-Back/clean-archi-ms-project
+      dockerfile: Dockerfile
+    ports:
+      - "8285:8285"
+    depends_on:
+      ms-apis-db:
+        condition: service_healthy
+      ms-registration-api:
+        condition: service_healthy
+    networks:
+      - apis-network
+
+networks:
+  apis-network:
