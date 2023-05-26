@@ -58,9 +58,9 @@ services:
       retries: 3
       start_period: 40s
 
-  back-front-gateway-api:
-    image: back-front-gateway-api:latest
-    container_name: back-front-gateway-api
+  gateway-api:
+    image: gateway-api:latest
+    container_name: gateway-api
     ports:
       - "8281:8281"
     build: 
@@ -135,6 +135,5 @@ services:
         condition: service_healthy
     networks:
       - apis-network
-
 networks:
   apis-network:
