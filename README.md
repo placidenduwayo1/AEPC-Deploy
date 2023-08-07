@@ -19,5 +19,5 @@ the backend(a spring boot microservices-base application) is located [here](http
 the frontend (angular application) is located [here](https://github.com/placidenduwayo1/AEPC-Front.git)
 
 ## microservices configuration server
-All services (utility services and business services) configiration files for config server are located here[here](https://github.com/placidenduwayo1/AEPC-Config-Service.git)
+All services (utility services and business services) configiration files for config server are located here [git](https://github.com/placidenduwayo1/config-files-center/tree/main/for-fullstack-3-aepc-project)
 
